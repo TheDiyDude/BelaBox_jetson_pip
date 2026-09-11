@@ -79,6 +79,6 @@ This project is licensed under the **MIT License**.
 
 **Marc-Oliver Blumenauer**
 
-📧 Email: [marc@l3c.de](mailto:marc@l3c.de)
+📧 Email: [marc@l3c.de](mailto:marc@l3c.de) 
 
-[![Ko-fi](https://img.shields.io/badge/Buy%20me%20a%20coffee-Ko--fi-ff5e5b?style=for-the-badge&logo=ko-fi)](https://ko-fi.com/randvieh)
+[![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/randvieh)
