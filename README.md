@@ -17,7 +17,7 @@ A custom hardware-accelerated pipeline for **BELABOX (NVIDIA Jetson)** that rece
 ## 🛠️ Installation
 
 1. Connect to your BELABOX via SSH.
-2. Create or copy the pipeline script into the Jetson pipelines folder:
+2. Create or copy the pipeline scripts into the Jetson pipelines folder, i.e.:
    ```bash
    sudo nano /usr/share/belacoder/pipelines/jetson/h265_camlink_1080p30_rtmp_pip
    ```
@@ -73,6 +73,7 @@ audioconvert ! voaacenc bitrate=128000 ! aacparse ! queue max-size-time=10000000
 mpegtsmux name=mux !
 appsink name=appsink
 ```
+[![PiP for BelaBox Jetson NANO 2GB HDMI and RTMP Input](https://img.youtube.com/vi/Au6CxLGmDas/maxresdefault.jpg)](https://youtu.be/Au6CxLGmDas)
 
 ## 📜 License
 
