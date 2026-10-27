@@ -85,6 +85,6 @@ This project is licensed under the **MIT License**.
 
 **Marc-Oliver Blumenauer**
    Twitch: [randvieh](https://www.twitch.tv/randvieh)
-📧 Email: [marc@l3c.de](mailto:marc@l3c.de) 
+📧 Email: [randvieh@randvieh.de](mailto:randvieh@randvieh.de) 
 
 [![Ko-fi](https://ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/randvieh)
