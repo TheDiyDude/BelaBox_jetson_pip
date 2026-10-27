@@ -17,14 +17,16 @@ A custom hardware-accelerated pipeline for **BELABOX (NVIDIA Jetson)** that rece
 ## 🛠️ Installation
 
 1. Connect to your BELABOX via SSH.
-2. Create or copy the pipeline scripts into the Jetson pipelines folder, i.e.:
+2. Create or copy the pipeline scripts into the `custom` pipelines folder, which belaUI provides for user pipelines (keeps them separate from the stock pipelines), i.e.:
    ```bash
-   sudo nano /usr/share/belacoder/pipelines/jetson/h265_camlink_1080p30_rtmp_pip
+   sudo mkdir -p /usr/share/belacoder/pipelines/custom
+   sudo nano /usr/share/belacoder/pipelines/custom/h265_camlink_1080p30_rtmp_pip
    ```
+   > If `belacoder_path` is set in belaUI's `setup.json`, the pipelines folder is `<belacoder_path>/pipeline/custom/` instead.
 3. Paste the contents of the [Pipeline Script](#-pipeline-script) section below into the file and save it (`Ctrl+O`, `Enter`, then `Ctrl+X`).
-4. Reboot your BELABOX:
+4. Restart belaUI so it picks up the new pipeline (it reads the pipeline list only at startup):
    ```bash
-   sudo reboot
+   sudo systemctl restart belaUI
    ```
 
 ## 💻 Usage Guide
@@ -36,13 +38,13 @@ A custom hardware-accelerated pipeline for **BELABOX (NVIDIA Jetson)** that rece
    ```
 3. **Select Pipeline in Web UI:** Open the BELABOX Web UI and select the new encoder:
    ```text
-   jetson/h265_camlink_1080p30_rtmp_pip
+   custom/h265_camlink_1080p30_rtmp_pip
    ```
 4. **Start Stream:** Click **Start** in the BELABOX UI. The incoming RTMP stream will appear as a PiP overlay over your main camera feed.
 
 ## 📄 Pipeline Script
 
-File location: `/usr/share/belacoder/pipelines/jetson/h265_camlink_1080p30_rtmp_pip`
+File location: `/usr/share/belacoder/pipelines/custom/h265_camlink_1080p30_rtmp_pip`
 
 ```gstreamer
 v4l2src ! identity name=ptsfixup signal-handoffs=TRUE ! identity drop-buffer-flags=GST_BUFFER_FLAG_DROPPABLE !
