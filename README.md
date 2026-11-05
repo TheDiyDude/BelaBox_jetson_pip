@@ -8,6 +8,7 @@ A custom hardware-accelerated pipeline for **BELABOX (NVIDIA Jetson)** that rece
 ## 🚀 Features
 
 * **Live RTMP Overlay:** Ingests a secondary stream sent to BELABOX and renders it as a Picture-in-Picture box over your main camera feed.
+* **Auto show/hide (`…_rtmp_pip_auto`):** With the PiP mixer service, the PiP box disappears completely when the phone stream stops and comes back automatically when it resumes. No frozen frame, no placeholder, and no restart of the main stream (see [Auto show/hide](#-auto-showhide-pip-mixer)).
 * **Hardware Accelerated:** Uses Jetson-native elements (`nvcompositor`, `nvv4l2decoder`, `nvv4l2h265enc`) for minimum latency and optimal performance.
 * **Layout Specs:**
   * **Primary Video:** 1920x1080 @ 30 FPS (Cam Link / capture card)
@@ -41,6 +42,37 @@ A custom hardware-accelerated pipeline for **BELABOX (NVIDIA Jetson)** that rece
    custom/h265_camlink_1080p30_rtmp_pip
    ```
 4. **Start Stream:** Click **Start** in the BELABOX UI. The incoming RTMP stream will appear as a PiP overlay over your main camera feed.
+
+## 👻 Auto show/hide (PiP mixer)
+
+Plain `rtmpsrc` cannot reconnect. If the phone stops sending, the PiP freezes on its last frame (or the stream stops), and it does not come back without restarting the stream.
+
+`h265_camlink_1080p30_rtmp_pip_auto` fixes this with a small helper service, [`mixer/belabox_pip_mixer.py`](mixer/belabox_pip_mixer.py):
+
+* It pulls `rtmp://127.0.0.1/publish/live`, decodes it in hardware to 400x300 RGBA, and passes it to belacoder via shared memory (`/run/belabox-pip/pip.sock`) at a constant 30 fps.
+* If no phone frame arrives for 0.5 s, it sends fully transparent frames (`0,0,0,0`), so the PiP vanishes. It reconnects automatically, and the PiP reappears as soon as the phone sends again.
+* belacoder keeps running the whole time. The phone stream may also start after the BELABOX stream.
+* Audio comes from the capture card (or any USB audio device, e.g. a wireless mic receiver, selected in belaUI). The phone's audio is not used.
+
+Installation (on the BELABOX, Ubuntu 18.04 / GStreamer 1.14):
+
+```bash
+sudo apt-get install python3-gst-1.0 gir1.2-gst-plugins-base-1.0
+sudo install -m 755 mixer/belabox_pip_mixer.py /usr/local/bin/
+sudo install -m 644 mixer/belabox-pip-mixer.service /etc/systemd/system/
+sudo systemctl daemon-reload && sudo systemctl enable --now belabox-pip-mixer
+sudo install -m 644 h265_camlink_1080p30_rtmp_pip_auto /usr/share/belacoder/pipelines/custom/
+sudo systemctl restart belaUI
+```
+
+Then select `custom/h265_camlink_1080p30_rtmp_pip_auto` in the Web UI. Logs: `journalctl -u belabox-pip-mixer`.
+Settings (environment variables in the service file): `PIP_WIDTH`, `PIP_HEIGHT`, `PIP_FPS`, `PIP_HIDE_AFTER`, `PIP_RTMP_URL`.
+If you change the size, change it in the pipeline (`shmsrc` caps and `sink_1::width/height`) as well.
+
+Notes from testing (Jetson Nano 2GB, L4T / GStreamer 1.14):
+* `nvcompositor` blends with premultiplied alpha, so "invisible" must be exactly `(0,0,0,0)`. `compositor background=transparent` produces `(255,255,255,0)`, which shows up as a white box.
+* `rtmpsrc` does not report a lost publisher (no error, no EOS). The mixer therefore uses a watchdog.
+* The `_reverse` pipelines still use `rtmpsrc` directly. There the phone is the 1080p main picture, and pushing 1080p RGBA through the mixer would be too heavy for the Nano.
 
 ## 📄 Pipeline Script
 

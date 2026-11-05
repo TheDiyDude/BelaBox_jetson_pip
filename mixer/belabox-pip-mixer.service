@@ -1,0 +1,12 @@
+[Unit]
+Description=BELABOX PiP-Mixer: Handy-Bild (RTMP) per Shared Memory an belacoder, ausgeblendet ohne Signal
+After=network.target nginx.service
+
+[Service]
+ExecStart=/usr/bin/python3 /usr/local/bin/belabox_pip_mixer.py
+Restart=always
+RestartSec=2
+Environment=PYTHONIOENCODING=utf-8
+
+[Install]
+WantedBy=multi-user.target
